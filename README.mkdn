@@ -131,13 +131,21 @@ Default namespace to look for adaptors.  Defaults to [Catalyst::Model::Injection
 
 The default adaptor to use, should you not set one.  Defaults to 'Application'.
 
+# PRIOR ART
+
+You may wish to review other similar approach on CPAN:
+
+[Catalyst::Model::Adaptor](https://metacpan.org/pod/Catalyst::Model::Adaptor).
+
 # AUTHOR
 
 John Napiorkowski [email:jjnapiork@cpan.org](email:jjnapiork@cpan.org)
 
 # SEE ALSO
 
-[Catalyst](https://metacpan.org/pod/Catalyst), [Catalyst::Response](https://metacpan.org/pod/Catalyst::Response)
+[Catalyst](https://metacpan.org/pod/Catalyst), [Catalyst::Model::InjectionHelpers::Application](https://metacpan.org/pod/Catalyst::Model::InjectionHelpers::Application),
+[Catalyst::Model::InjectionHelpers::Factory](https://metacpan.org/pod/Catalyst::Model::InjectionHelpers::Factory), [Catalyst::Model::InjectionHelpers::PerRequest](https://metacpan.org/pod/Catalyst::Model::InjectionHelpers::PerRequest)
+[Catalyst::ModelRole::InjectionHelpers](https://metacpan.org/pod/Catalyst::ModelRole::InjectionHelpers)
 
 # COPYRIGHT & LICENSE
 
