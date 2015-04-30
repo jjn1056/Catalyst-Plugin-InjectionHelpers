@@ -1,5 +1,11 @@
-use Test::Most;
 use Scalar::Util qw/refaddr/;
+
+BEGIN {
+  use Test::Most;
+  eval "use Catalyst 5.90090; 1" || do {
+    plan skip_all => "Need a newer version of Catalyst => $@";
+  };
+}
 
 BEGIN {
   package MyApp::Role::Foo;
