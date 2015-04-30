@@ -54,8 +54,6 @@ BEGIN {
   MyApp->config(
     'Model::SingletonA' => { aaa=>100 },
     'Model::SingletonB' => { arg=>300 },
-
-    'Model::Normal' => { ccc=>200 },
   );
 
   MyApp->setup;

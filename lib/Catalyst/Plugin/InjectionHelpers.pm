@@ -4,6 +4,8 @@ use Moose::Role;
 use Class::Load;
 use Catalyst::Utils;
 use Catalyst::Model::InjectionHelpers::Application;
+use Catalyst::Model::InjectionHelpers::Factory;
+use Catalyst::Model::InjectionHelpers::PerRequest;
 
 requires 'setup_injected_component';
 
@@ -51,7 +53,7 @@ after 'setup_injected_component', sub {
         method=>$method,
         roles=>\@roles,
         injection_parameters=>$config,
-        config=> ($app->config->{$injected_component_name} || +{}),
+        config=> $app->config_for("$app::$injected_component_name"),
       ) };
   }
 };
