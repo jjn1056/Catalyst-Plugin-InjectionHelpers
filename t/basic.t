@@ -39,11 +39,22 @@ BEGIN {
   use Catalyst 'InjectionHelpers';
 
   MyApp->inject_components(
-    'Model::Singleton' => { from_class=>'MyApp::Singleton', adaptor=>'Singleton', roles=>['MyApp::Role::Foo'], method=>'new' },
+    'Model::SingletonA' => { from_class=>'MyApp::Singleton', adaptor=>'Application', roles=>['MyApp::Role::Foo'], method=>'new' },
+    'Model::SingletonB' => {
+      from_class=>'MyApp::Singleton', 
+      adaptor=>'Application', 
+      roles=>['MyApp::Role::Foo'], 
+      method=>sub {
+        my ($adaptor, $class, $app, %args) = @_;
+        return $class->new(aaa=>$args{arg});
+      },
+    },
   );
 
   MyApp->config(
-    'Model::Singleton' => { aaa=>100 },
+    'Model::SingletonA' => { aaa=>100 },
+    'Model::SingletonB' => { arg=>300 },
+
     'Model::Normal' => { ccc=>200 },
   );
 
@@ -55,12 +66,11 @@ use Catalyst::Test 'MyApp';
 {
   my ($res, $c) = ctx_request( '/example/test' );
   is $c->model('Normal')->ccc, 200;
-  is $c->model('Singleton')->aaa, 100;
+  is $c->model('SingletonA')->aaa, 100;
+  is $c->model('SingletonA')->foo, 'foo';
+  is $c->model('SingletonB')->aaa, 300;
+  is $c->model('SingletonB')->foo, 'foo';
 
-  use Devel::Dwarn;
-  Dwarn $c->model('Singleton');
-
-  is $c->model('Singleton')->foo, 'foo';
 }
 
 done_testing;
