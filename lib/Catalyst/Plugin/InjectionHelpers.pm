@@ -1,7 +1,6 @@
 package Catalyst::Plugin::InjectionHelpers;
 
 use Moose::Role;
-use Class::Load;
 use Catalyst::Utils;
 use Catalyst::Model::InjectionHelpers::Application;
 use Catalyst::Model::InjectionHelpers::Factory;
@@ -193,13 +192,21 @@ Default namespace to look for adaptors.  Defaults to L<Catalyst::Model::Injectio
 
 The default adaptor to use, should you not set one.  Defaults to 'Application'.
 
+=head1 PRIOR ART
+
+You may wish to review other similar approach on CPAN:
+
+L<Catalyst::Model::Adaptor>.
+
 =head1 AUTHOR
 
 John Napiorkowski L<email:jjnapiork@cpan.org>
   
 =head1 SEE ALSO
  
-L<Catalyst>, L<Catalyst::Response>
+L<Catalyst>, L<Catalyst::Model::InjectionHelpers::Application>,
+L<Catalyst::Model::InjectionHelpers::Factory>, L<Catalyst::Model::InjectionHelpers::PerRequest>
+L<Catalyst::ModelRole::InjectionHelpers>
 
 =head1 COPYRIGHT & LICENSE
  

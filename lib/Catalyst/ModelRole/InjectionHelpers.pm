@@ -32,4 +32,41 @@ sub build_new_instance {
   }
 }
 
+=head1 NAME
+
+Catalyst::ModelRole::InjectionHelpers - Common role for adaptors
+
+=head1 SYNOPSIS
+
+    package MyApp::MySpecialAdaptor
+
+    use Moose;
+    with 'Catalyst::ModelRole::InjectionHelpers';
+
+    sub ACCEPT_CONTEXT { ... }
+
+=head1 DESCRIPTION
+
+Common functionality and interface inforcement for injection helper adaptors.
+You should see L<Catalyst::Plugin::InjectionHelpers> for more.
+
+=head1 AUTHOR
+
+John Napiorkowski L<email:jjnapiork@cpan.org>
+  
+=head1 SEE ALSO
+ 
+L<Catalyst::Plugin::InjectionHelpers>
+L<Catalyst>, L<Catalyst::Model::InjectionHelpers::Application>,
+L<Catalyst::Model::InjectionHelpers::Factory>, L<Catalyst::Model::InjectionHelpers::PerRequest>
+L<Catalyst::ModelRole::InjectionHelpers>
+
+=head1 COPYRIGHT & LICENSE
+ 
+Copyright 2015, John Napiorkowski L<email:jjnapiork@cpan.org>
+ 
+This library is free software; you can redistribute it and/or modify it under
+the same terms as Perl itself.
+ 
+=cut
 1;
