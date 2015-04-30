@@ -8,6 +8,8 @@ use Catalyst::Model::InjectionHelpers::PerRequest;
 
 requires 'setup_injected_component';
 
+our $VERSION = '0.001';
+
 my $adaptor_namespace = sub {
   my $app = shift;
   if(my $config = $app->config->{'Plugin::InjectionHelpers'}) {
