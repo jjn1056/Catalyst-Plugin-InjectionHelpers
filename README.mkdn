@@ -1,0 +1,48 @@
+# NAME
+
+    $self->components
+    
+
+Catalyst::Plugin::InjectionHelpers - Enhance Catalyst Component Injection
+
+# SYNOPSIS
+
+Use the plugin in your application class:
+
+    package MyApp;
+    use Catalyst 'InjectionHelpers';
+
+    MyApp->setup;
+
+Then you can use it in your controllers:
+
+    package MyApp::Controller::Example;
+
+    use base 'Catalyst::Controller';
+
+# DESCRIPTION
+
+This plugin enhances the build in component injection features of [Catalyst](https://metacpan.org/pod/Catalyst)
+(since v5.90090) to make it easy to bring non [Catalyst::Component](https://metacpan.org/pod/Catalyst::Component) classes
+into your application.  You may consider using this for what you often used
+[Catalyst::Model::Adaptor](https://metacpan.org/pod/Catalyst::Model::Adaptor) in the past for (although there is no reason to
+stop using that if you are doing so, its not a 'broken' approach, but for the
+very simple cases this might suffice and allow you to reduce the number of nearly
+empty 'boilerplate' classes in your application.
+
+# METHODS
+
+# AUTHOR
+
+John Napiorkowski [email:jjnapiork@cpan.org](email:jjnapiork@cpan.org)
+
+# SEE ALSO
+
+[Catalyst](https://metacpan.org/pod/Catalyst), [Catalyst::Response](https://metacpan.org/pod/Catalyst::Response)
+
+# COPYRIGHT & LICENSE
+
+Copyright 2015, John Napiorkowski [email:jjnapiork@cpan.org](email:jjnapiork@cpan.org)
+
+This library is free software; you can redistribute it and/or modify it under
+the same terms as Perl itself.
