@@ -8,7 +8,7 @@ use Catalyst::Model::InjectionHelpers::PerRequest;
 
 requires 'setup_injected_component';
 
-our $VERSION = '0.002';
+our $VERSION = '0.003';
 
 my $adaptor_namespace = sub {
   my $app = shift;
@@ -30,31 +30,33 @@ my $default_adaptor = sub {
 
 my $normalize_adaptor = sub {
   my $app = shift;
-  my $adaptor = shift || $app->default_adaptor;
+  my $adaptor = shift || $app->$default_adaptor;
   return $adaptor=~m/::/ ? 
     $adaptor : "${\$app->$adaptor_namespace}::$adaptor";
 };
 
 after 'setup_injected_component', sub {
   my ($app, $injected_component_name, $config) = @_;
-  if(exists $config->{from_class}) {
-    my $from_class = $config->{from_class};
+  if(exists($config->{from_class}) || exists($config->{from_code})) {
+    my $from_class = $config->{from_class} || undef;
     my $adaptor = $app->$normalize_adaptor($config->{adaptor});
-    my $method = $config->{method} || 'new';
+    my $method = $config->{method} || $config->{from_code} || 'new';
     my @roles = @{$config->{roles} ||[]};
 
-    Catalyst::Utils::ensure_class_loaded($from_class);
+    Catalyst::Utils::ensure_class_loaded($from_class) if $from_class;
     Catalyst::Utils::ensure_class_loaded($adaptor);
+
+    my $from = $from_class || $config->{from_code};
 
     $app->components->{ "$app::$injected_component_name" } = sub { 
       $adaptor->new(
         application=>$app,
-        from_class=>$from_class,
+        from=>$from,
         injected_component_name=>$injected_component_name,
         method=>$method,
         roles=>\@roles,
         injection_parameters=>$config,
-        config=> $app->config_for("$app::$injected_component_name"),
+        get_config=> sub { shift->config_for("$app::$injected_component_name") },
       ) };
   }
 };
@@ -120,7 +122,27 @@ are key /values as described below:
 =head2 from_class
 
 This is the full namespace of the class you are adapting to use as a L<Catalyst>
-component.
+component.  Example 'MyApp::Class'.
+
+=head2 from_code
+
+This is a codereference that generates your component instance.  Used when you
+don't have a class you wish to adapt (handy for prototyping or small components).
+
+    MyApp->inject_components(
+      'Model::Foo' => {
+        from_code => sub {
+          my ($adaptor_instance, $coderef, $app, %args) = @_;
+          return $XX;
+        },
+        adaptor => 'Factory',
+      },
+    );
+
+The second arguement is a reference to the orginal 'from_code' coderef (useful
+for when you need to do recursion.)
+
+If you use this you should not define the 'method' key or the 'roles' key (below).
 
 =head2 roles
 
@@ -139,6 +161,61 @@ the application or context, depending on the type adaptor.  The forth is a hash
 of arguments which merges the global configuration for the named component along
 with any arguments passed in the request for the component (this only makes
 sense for non application scoped models, btw).
+
+Example:
+
+    MyApp->inject_components(
+      'Model::Foo' => {
+        from_class => 'Foo',
+        method => sub {
+          my ($adaptor_instance, $from_class, $app_or_ctx, %args) = @_;
+        },
+        adaptor => 'Factory',
+      },
+    );
+
+Argument details:
+
+=over 4
+
+=item $adaptor_instance
+
+Reference to the adaptor object.  Useful if you made your own adaptor and wish
+to access methods and attributes from it.  See L<Catalyst::ModelRole::InjectionHelpers>
+and the specific adaptor for more information.
+
+=item $from_class
+
+The name of the class you set in the 'from_class' parameter.
+
+=item $app_or_ctx
+
+Either your application class or a reference to the current context, depending on how
+the adaptore is scoped (PerRequest and Factory get $ctx).
+
+=item %args
+
+A Hash of the configuration parameters from your application configuration.  If the
+adaptor is context/request scoped, also combines any arguments included in the call
+for the component.  for example:
+
+    package MyApp;
+
+    use Catalyst;
+
+    MyApp->inject_components( 'Model::Foo' => { from_class=>"Foo", adaptor=>'Factory' });
+    MyApp->config( 'Model::Foo' => { aaa => 111 } )
+    MyApp->setup;
+
+If in an action you say:
+
+    my $model = $c->model('Foo', bbb=>222);
+
+Then C<%args> would be:
+
+    (aaa=>111, bbb=>222);
+
+=back
 
 =head2 adaptor
 

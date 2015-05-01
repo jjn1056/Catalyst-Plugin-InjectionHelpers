@@ -47,6 +47,7 @@ BEGIN {
   use Catalyst 'InjectionHelpers';
 
   MyApp->inject_components(
+    'Model::FromCode' => { from_code => sub { my ($adaptor, $code, $app, %args) = @_;  return bless {a=>1}, 'AAAA' } },
     'Model::SingletonA' => { from_class=>'MyApp::Singleton', adaptor=>'Application', roles=>['MyApp::Role::Foo'], method=>'new' },
     'Model::SingletonB' => {
       from_class=>'MyApp::Singleton', 
@@ -82,6 +83,7 @@ use Catalyst::Test 'MyApp';
   is $c->model('SingletonB')->aaa, 300;
   is $c->model('SingletonB')->foo, 'foo';
   is refaddr($c->model('SingletonB')), refaddr($c->model('SingletonB'));
+  is $c->model('FromCode')->{a}, 1;
 
   {
     ok my $f = $c->model('Factory', bbb=>'bbb');

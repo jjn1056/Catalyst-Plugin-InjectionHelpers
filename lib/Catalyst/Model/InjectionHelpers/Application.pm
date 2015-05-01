@@ -5,7 +5,6 @@ with 'Catalyst::ModelRole::InjectionHelpers';
 
 has instance => (
   is=>'ro',
-  isa=>'Object',
   init_arg=>undef,
   lazy=>1,
   required=>1,

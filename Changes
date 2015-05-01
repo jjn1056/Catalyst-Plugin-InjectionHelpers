@@ -1,4 +1,15 @@
 Revision history for Perl extension Catalyst::Plugin::InjectionHelpers
 
+0.003   01 May 2015
+        - Added 'from_code' injector
+        - Made sure we get a fresh copy of the configuration for request scoped
+          components (to play nice with the MapComponentDependencies plugin).
+        - Loosen the constraint on the Application adaptor so that the component
+          is not required be be an object.
+        - Tweaked the documentation a bit.
+
+0.002   30 April 2015
+        - Made sure test case relied on Catalyst v5.90090+
+
 0.001   30 April 2015
         - original version.
