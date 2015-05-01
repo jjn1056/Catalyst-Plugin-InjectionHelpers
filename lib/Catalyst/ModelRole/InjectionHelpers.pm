@@ -2,6 +2,7 @@ package Catalyst::ModelRole::InjectionHelpers;
 
 use Moose::Role;
 use Moose::Util;
+
 requires 'ACCEPT_CONTEXT';
 
 has application => (is=>'ro', required=>1);
@@ -18,17 +19,32 @@ has composed_class => (
   lazy=>1,
   default=>sub { Moose::Util::with_traits($_[0]->from, @{$_[0]->roles}) });
 
+my $merge_args = sub {
+  my ($self, $app_or_c, @args) = @_;
+  my %global_config_args = %{ $self->get_config->($app_or_c) };
+
+  # Ok, so if @args are a hash, it just gets combined, no harm at
+  # all as long as you expect a hash.  But is @args is an array,
+  # we want it FIRST, because we will assume the @args are intended to
+  # be positional.
+
+  # Remember @args only comes from $c->model($model, @args).
+
+  return (@args, %global_config_args);
+};
+
 sub build_new_instance {
-  my ($self, $app_or_c, %args) = @_;
-  my %merged_args = (%{ $self->get_config->($app_or_c) }, %args);
+  my ($self, $app_or_c, @args) = @_;
+  my @merged_args = $self->$merge_args($app_or_c, @args);
   my $method = $self->method;
-  my $composed_class = ref($self->from)||'' eq "CODE" ? $self->from : $self->composed_class;
+  my $composed_class = ref($self->from)||'' eq "CODE" ?
+    $self->from : $self->composed_class;
 
   if((ref($method)||'') eq 'CODE') {
-    return $self->$method($composed_class, $app_or_c, %merged_args)
+    return $self->$method($composed_class, $app_or_c, @merged_args)
 
   } else {
-    return $composed_class->$method(%merged_args);
+    return $composed_class->$method(@merged_args);
   }
 }
 

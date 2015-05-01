@@ -11,7 +11,7 @@ has instance => (
   default=>sub {$_[0]->build_new_instance($_[0]->application)} );
 
 sub ACCEPT_CONTEXT {
-  my ($self, $c, %args) = @_;
+  my ($self, $c, @ignored) = @_;
   return $self->instance;
 }
 

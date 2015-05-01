@@ -8,7 +8,7 @@ use Catalyst::Model::InjectionHelpers::PerRequest;
 
 requires 'setup_injected_component';
 
-our $VERSION = '0.003';
+our $VERSION = '0.004';
 
 my $adaptor_namespace = sub {
   my $app = shift;

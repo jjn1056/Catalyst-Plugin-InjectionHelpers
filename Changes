@@ -1,5 +1,8 @@
 Revision history for Perl extension Catalyst::Plugin::InjectionHelpers
 
+0.004   01 May 2015
+        - Support for list arguments
+
 0.003   01 May 2015
         - Added 'from_code' injector
         - Made sure we get a fresh copy of the configuration for request scoped
