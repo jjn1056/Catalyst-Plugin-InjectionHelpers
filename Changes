@@ -1,5 +1,9 @@
 Revision history for Perl extension Catalyst::Plugin::InjectionHelpers
 
+0.005   11 May 2015
+        - Fix the way we merge parameters so that you can override global
+          parameters from the $c->model/view calls (for ACCEPT_CONTEXT components).
+
 0.004   01 May 2015
         - Support for list arguments
 

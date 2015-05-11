@@ -29,8 +29,9 @@ my $merge_args = sub {
   # be positional.
 
   # Remember @args only comes from $c->model($model, @args).
-
-  return (@args, %global_config_args);
+  # So here you can override global args from the call to model, and for
+  # now we just do the dumbest possible merge type.
+  return (%global_config_args, @args);
 };
 
 sub build_new_instance {
@@ -42,7 +43,6 @@ sub build_new_instance {
 
   if((ref($method)||'') eq 'CODE') {
     return $self->$method($composed_class, $app_or_c, @merged_args)
-
   } else {
     return $composed_class->$method(@merged_args);
   }
