@@ -1,5 +1,9 @@
 Revision history for Perl extension Catalyst::Plugin::InjectionHelpers
 
+0.006   18 May 2015
+        - Changed the way a variable is used to prevent errors when the var
+          namespace can be obscure.
+
 0.005   11 May 2015
         - Fix the way we merge parameters so that you can override global
           parameters from the $c->model/view calls (for ACCEPT_CONTEXT components).
