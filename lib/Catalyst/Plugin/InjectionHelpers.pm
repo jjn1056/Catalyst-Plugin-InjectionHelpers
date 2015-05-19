@@ -8,7 +8,7 @@ use Catalyst::Model::InjectionHelpers::PerRequest;
 
 requires 'setup_injected_component';
 
-our $VERSION = '0.006';
+our $VERSION = '0.007';
 
 my $adaptor_namespace = sub {
   my $app = shift;
@@ -49,7 +49,7 @@ after 'setup_injected_component', sub {
     my $from = $from_class || $config->{from_code};
     my $config_namespace = $app .'::'. $injected_component_name;
 
-    $app->components->{ "$app::$injected_component_name" } = sub { 
+    $app->components->{$config_namespace} = sub { 
       $adaptor->new(
         application=>$app,
         from=>$from,
@@ -57,6 +57,7 @@ after 'setup_injected_component', sub {
         method=>$method,
         roles=>\@roles,
         injection_parameters=>$config,
+        ( exists $config->{transform_args} ? (transform_args => $config->{transform_args}) : ()),
         get_config=> sub { shift->config_for($config_namespace) },
       ) };
   }
@@ -257,6 +258,30 @@ merged with the global configuration and used to initialize the model.
 Your new adaptor should consume the role L<Catalyst::ModelRole::InjectionHelpers>
 and provide a method ACCEPT_CONTEXT which must return the component you wish to
 inject.  Please review the existing adaptors and that role for insights.
+
+=head2 transform_args
+
+A coderef that you can use to transform configuration arguments into something
+more suitable for your class.  For example, the configuration args is typically
+a hash, but your object class may require some positional arguments.
+
+    MyApp->inject_components(
+      'Model::Foo' => {
+        from_class = 'Foo',
+        transform_args => sub {
+          my ($adaptor_instance, $coderef, $app, %args) = @_;
+          my $path = delete $args{path},
+          return ($path, %args);
+        },
+      },
+    );
+
+Should return the args as they as used by the initialization method of the
+'from_class'.
+
+Use 'transform_args' when you just need to tweak how your object uses arguments
+and use 'from_code' when you need more control on what kind of object is returned
+(in other words choose the smallest hammer for the job).
 
 =head1 CONFIGURATION
 

@@ -1,5 +1,12 @@
 Revision history for Perl extension Catalyst::Plugin::InjectionHelpers
 
+0.007   19 May 2015
+        - Another use of variable change similar to the previous release that
+          I missed the first time.
+        - Added 'transform_args' configuration for better control.
+        - Made more API in Catalyst::ModelRole::InjectionHelpers public in case
+          your need it for your custom subclasses.
+
 0.006   18 May 2015
         - Changed the way a variable is used to prevent errors when the var
           namespace can be obscure.
