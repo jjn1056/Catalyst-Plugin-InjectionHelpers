@@ -1,7 +1,7 @@
 package Catalyst::Model::InjectionHelpers::Application;
 
 use Moose;
-with 'Catalyst::ModelRole::InjectionHelpers'; 
+with 'Catalyst::ComponentRole::InjectionHelpers'; 
 
 has instance => (
   is=>'ro',

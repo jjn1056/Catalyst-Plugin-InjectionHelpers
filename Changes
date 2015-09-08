@@ -1,5 +1,10 @@
 Revision history for Perl extension Catalyst::Plugin::InjectionHelpers
 
+0.008   08 September 2015
+        - Adaptor helper is now a component role not a model role since you
+          can use it for views and controllers.
+        - New PerSession Adaptor
+
 0.007   19 May 2015
         - Another use of variable change similar to the previous release that
           I missed the first time.

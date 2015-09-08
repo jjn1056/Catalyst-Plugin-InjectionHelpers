@@ -3,7 +3,7 @@ package Catalyst::Model::InjectionHelpers::PerRequest;
 use Moose;
 use Scalar::Util qw/blessed refaddr/;
 
-with 'Catalyst::ModelRole::InjectionHelpers'; 
+with 'Catalyst::ComponentRole::InjectionHelpers'; 
 
 sub ACCEPT_CONTEXT {
   my ($self, $c, @args) = @_;

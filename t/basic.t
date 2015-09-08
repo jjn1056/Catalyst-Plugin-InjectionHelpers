@@ -24,7 +24,7 @@ BEGIN {
   has bbb => (is=>'ro');
 
   package MyApp::PerRequest;
-  $INC{'MyApp/Singleton.pm'} = __FILE__;
+  $INC{'MyApp/PerRequest.pm'} = __FILE__;
 
   use Moose;
 
@@ -54,8 +54,17 @@ BEGIN {
     $c->res->body('test');
   }
 
+  sub per_session :Local Args(0) {
+    my ($self, $c) = @_;
+    $c->res->body($c->model('PerSession')->request_name);
+  }
+
   package MyApp;
-  use Catalyst 'InjectionHelpers';
+  use Catalyst qw/
+    InjectionHelpers
+    Session
+    Session::Store::Dummy
+    Session::State::Cookie/;
 
   MyApp->inject_components(
     'Model::FromCode' => { from_code => sub { my ($adaptor, $code, $app, %args) = @_;  return bless {a=>1}, 'AAAA' } },
@@ -80,7 +89,6 @@ BEGIN {
     },
     'Model::Factory' => { from_class=>'MyApp::Singleton', adaptor=>'Factory' },
     'Model::PerRequest' => { from_class=>'MyApp::Singleton', adaptor=>'PerRequest' },
-
   );
 
   MyApp->config(
@@ -94,6 +102,7 @@ BEGIN {
 }
 
 use Catalyst::Test 'MyApp';
+use HTTP::Request::Common;
 
 {
   my ($res, $c) = ctx_request( '/example/test' );

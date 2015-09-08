@@ -1,7 +1,7 @@
 package Catalyst::Model::InjectionHelpers::Factory;
 
 use Moose;
-with 'Catalyst::ModelRole::InjectionHelpers'; 
+with 'Catalyst::ComponentRole::InjectionHelpers'; 
 
 sub ACCEPT_CONTEXT {
   my ($self, $c, @args) = @_;

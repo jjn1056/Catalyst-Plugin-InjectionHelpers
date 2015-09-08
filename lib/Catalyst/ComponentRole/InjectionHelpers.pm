@@ -1,4 +1,4 @@
-package Catalyst::ModelRole::InjectionHelpers;
+package Catalyst::ComponentRole::InjectionHelpers;
 
 use Moose::Role;
 use Moose::Util;
@@ -61,14 +61,14 @@ sub build_new_instance {
 
 =head1 NAME
 
-Catalyst::ModelRole::InjectionHelpers - Common role for adaptors
+Catalyst::ComponentRole::InjectionHelpers; - Common role for adaptors
 
 =head1 SYNOPSIS
 
     package MyApp::MySpecialAdaptor
 
     use Moose;
-    with 'Catalyst::ModelRole::InjectionHelpers';
+    with 'Catalyst::ComponentRole::InjectionHelpers';
 
     sub ACCEPT_CONTEXT { ... }
 
