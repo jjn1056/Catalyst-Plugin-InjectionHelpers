@@ -48,7 +48,7 @@ L<Catalyst::Model::InjectionHelpers::PerSession>, L<Catalyst::ModelRole::Injecti
 
 =head1 COPYRIGHT & LICENSE
  
-Copyright 2015, John Napiorkowski L<email:jjnapiork@cpan.org>
+Copyright 2016, John Napiorkowski L<email:jjnapiork@cpan.org>
  
 This library is free software; you can redistribute it and/or modify it under
 the same terms as Perl itself.

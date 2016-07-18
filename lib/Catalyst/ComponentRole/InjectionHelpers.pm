@@ -10,7 +10,7 @@ has from => (is=>'ro', isa=>'ClassName|CodeRef', required=>1);
 has method => (is=>'ro', required=>1, default=>'new');
 has injected_component_name => (is=>'ro', isa=>'Str', required=>1);
 has injection_parameters => (is=>'ro', isa=>'HashRef', required=>1);
-has get_config => (is=>'ro', isa=>'CodeRef', required=>1, default=>sub { +{} });
+has get_config => (is=>'ro', isa=>'CodeRef', required=>1, default=>sub {sub { +{} }});
 has roles => (is=>'ro', isa=>'ArrayRef', required=>1, default=>sub { +[] });
 has transform_args => (is=>'ro', isa=>'CodeRef', predicate=>'has_transform_args');
 has composed_class => (
@@ -156,7 +156,7 @@ L<Catalyst::ModelRole::InjectionHelpers>
 
 =head1 COPYRIGHT & LICENSE
  
-Copyright 2015, John Napiorkowski L<email:jjnapiork@cpan.org>
+Copyright 2016, John Napiorkowski L<email:jjnapiork@cpan.org>
  
 This library is free software; you can redistribute it and/or modify it under
 the same terms as Perl itself.
