@@ -83,15 +83,28 @@ BEGIN {
       adaptor=>'PerRequest',
       roles=>['MyApp::Role::Foo'],
     },
-    'Model::Factory' => { from_class=>'MyApp::Singleton', adaptor=>'Factory' },
     'Model::PerRequest' => { from_class=>'MyApp::Singleton', adaptor=>'PerRequest' },
 
   );
 
   MyApp->config(
+    'Plugin::InjectionHelpers' => {
+      dispatchers => {
+        '-my' => sub {
+          my ($app_ctx, $what) = @_;
+          warn "asking for a -my $what";
+          return 1;
+        },
+      },
+    },
     'Model::SingletonA' => { aaa=>100 },
     'Model::SingletonB' => { arg=>300 },
-    'Model::Factory' => {aaa=>444},
+    'Model::Factory' => {
+      -inject => { from_class=>'MyApp::Singleton', adaptor=>'Factory' },
+      aaa => 444,
+      user => { -model => 'SingletonA' },
+      ctx => { -core => '$ctx' }
+    },
     'Model::Normal' => { ccc=>200 },
     'Model::PerRequest2' => {
       ctx => FromContext,

@@ -6,7 +6,9 @@ use Catalyst::Model::InjectionHelpers::Application;
 use Catalyst::Model::InjectionHelpers::Factory;
 use Catalyst::Model::InjectionHelpers::PerRequest;
 
-requires 'setup_injected_component';
+requires 'setup_injected_component',
+  'setup_injected_components',
+  'config_for';
 
 our $VERSION = '0.011';
 
@@ -33,6 +35,62 @@ my $normalize_adaptor = sub {
   my $adaptor = shift || $app->$default_adaptor;
   return $adaptor=~m/::/ ? 
     $adaptor : "${\$app->$adaptor_namespace}::$adaptor";
+};
+
+my $debug = 1;
+my %core_dispatch = (
+  '$app' => sub {
+      my $proto = shift; 
+      my $maybe_app = ref $proto;
+      return $maybe_app ? $maybe_app : $proto;
+  },
+  '$ctx' => sub { shift },
+  '$req' => sub { shift->req },
+  '$res' => sub { shift->res },
+  '$log' => sub { shift->log },
+);
+
+my %dispatch_table = (
+  '-core' => sub {
+    my ($app_ctx, $what) = @_;
+    return $core_dispatch{$what}->($app_ctx);
+  },
+  '-code' => sub { 
+    my ($app_ctx, $code) = @_;
+    $app_ctx->log->debug("Executing code injection.") if $app_ctx->debug && $debug;
+    do {
+      $app_ctx->log->error("Provided value '$code' not a coderef.");
+      return undef;
+    } unless (ref($app_ctx) && ref($app_ctx) eq 'CODE');
+    return $code->($app_ctx);
+  },
+  '-model' => sub {
+    my ($app_ctx, $model) = @_;
+    $app_ctx->log->debug("Providing model '$model' for injection.") if $app_ctx->debug && $debug;
+    return $app_ctx->model($model);
+  },
+  '-view' => sub {
+    my ($app_ctx, $view) = @_;
+    $app_ctx->log->debug("Providing view '$view' for injection.") if $app_ctx->debug && $debug;
+    return $app_ctx->view($view);
+  },
+  '-controller' => sub {
+    my ($app_ctx, $controller) = @_;
+    $app_ctx->log->debug("Providing controller '$controller' for injection.") if $app_ctx->debug && $debug;
+    return $app_ctx->controller($controller);
+  },
+);
+
+after 'setup_finalize', sub {
+  my ($c) = @_;
+  if (my $config = $c->config->{'Plugin::InjectionHelpers'}) {
+    if(my $custom_dispatch = $config->{dispatchers}) {
+      %dispatch_table = %{ Catalyst::Utils::merge_hashes(\%dispatch_table, $custom_dispatch) };
+    }
+    if(defined(my $has_debug_flag = $config->{debug})) {
+      $debug = $has_debug_flag;
+    }
+  }
 };
 
 before 'setup_injected_components', sub {
@@ -76,6 +134,30 @@ after 'setup_injected_component', sub {
       return $app->setup_component($new_component);
     };
   }
+};
+
+around 'config_for', sub {
+  my ($orig, $app_or_ctx, $component_name, @args) = @_;
+  my $config = ($app_or_ctx->$orig($component_name, @args) || +{});
+  my $mapped_config = +{};
+  foreach my $key (keys %{$config||+{}}) {
+    if(ref(my $proto = $config->{$key}) eq 'HASH') {
+      my ($type) = keys %{$proto};
+      if(my $dispatchable = $dispatch_table{$type}) {
+        my $dependency = $dispatchable->($app_or_ctx, $proto->{$type});
+        if($dependency) {
+          $mapped_config->{$key} = $dependency;
+        } else {
+          $app_or_ctx->log->debug("No dependency type '$type' of '$proto->{$type}' for '$component_name'")
+            if $app_or_ctx->debug;
+        }
+      } else {
+        $app_or_ctx->log->debug("Can't inject dependency '$type' for '$component_name'")
+          if $app_or_ctx->debug;
+      }
+    }
+  }
+  return my $merged = Catalyst::Utils::merge_hashes($config, $mapped_config);
 };
 
 1;
