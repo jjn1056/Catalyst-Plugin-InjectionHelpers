@@ -549,19 +549,19 @@ context object as it leads to unnecessary tight coupling.
 
 =item $req
 
-The result of C<$c->req>
+The result of C<< $c->req >>
 
 =item $res
 
-The result of C<$c->res>
+The result of C<< $c->res >>
 
 =item $log
 
-The result of C<$c->log>
+The result of C<< $c->log >>
 
 =item $user
 
-The result of C<$c->user> (if it exists, you should either define it or
+The result of C<< $c->user >> (if it exists, you should either define it or
 use the Authentication plugin).
 
 =back
