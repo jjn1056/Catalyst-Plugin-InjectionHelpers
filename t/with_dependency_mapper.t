@@ -67,15 +67,15 @@ BEGIN {
 
 
   MyApp->inject_components(
-    'Model::FromCode' => { from_code => sub { my ($adaptor, $code, $app, %args) = @_;  return bless {a=>1}, 'AAAA' } },
+    'Model::FromCode' => { from_code => sub { my ($app, %args) = @_;  return bless {a=>1}, 'AAAA' } },
     'Model::SingletonA' => { from_class=>'MyApp::Singleton', adaptor=>'Application', roles=>['MyApp::Role::Foo'], method=>'new' },
     'Model::SingletonB' => {
-      from_class=>'MyApp::Singleton', 
-      adaptor=>'Application', 
-      roles=>['MyApp::Role::Foo'], 
-      method=>sub {
-        my ($adaptor, $class, $app, %args) = @_;
-        return $class->new(aaa=>$args{arg});
+      from_class => 'MyApp::Singleton', 
+      adaptor => 'Application', 
+      roles => ['MyApp::Role::Foo'], 
+      method => sub {
+        my ($from_class, $app, %args) = @_;
+        return $from_class->new(aaa=>$args{arg});
       },
     },
     'Model::PerRequest2' => {
@@ -109,6 +109,30 @@ BEGIN {
     'Model::PerRequest2' => {
       ctx => FromContext,
     },
+    'Model::AllCode1' => {
+      -name => 'one',
+      -inject => { 
+        from_code => sub {
+          my ($ctx, %args) = @_;
+          return bless {a=>111}, '111';
+
+        },
+        adaptor => 'Factory',
+      },
+    },
+    'Model::AllCode2' => {
+      -name => 'two',
+      -inject => {
+        adaptor => 'Factory',
+        from_code => sub {
+          my ($ctx, %args) = @_;
+          return bless {a=>\%args}, '111';
+        },
+      },
+      one => { -model => 'AllCode1' },
+      two => { -code => sub { return shift } },
+    },
+
   );
 
   MyApp->setup;
@@ -149,6 +173,7 @@ use Catalyst::Test 'MyApp';
       is refaddr($p2), refaddr($c->model('PerRequest'));
       isnt refaddr($p), refaddr($c->model('PerRequest'));
       isnt refaddr($p), refaddr($p2);
+      ok $c->model('AllCode2');
     }
   }
 }
