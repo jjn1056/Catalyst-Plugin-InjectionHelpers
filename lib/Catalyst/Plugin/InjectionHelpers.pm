@@ -10,7 +10,7 @@ requires 'setup_injected_component',
   'setup_injected_components',
   'config_for';
 
-our $VERSION = '0.011';
+our $VERSION = '0.012';
 
 my $adaptor_namespace = sub {
   my $app = shift;
