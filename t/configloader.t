@@ -4,7 +4,7 @@ use lib "$FindBin::Bin/lib";
 use Test::Most;
 
 BEGIN {
-  eval "use Catalyst::Plugin::ConfigLoaderSS; 1" || do {
+  eval "use Catalyst::Plugin::ConfigLoader; 1" || do {
     plan skip_all => "Need a Catalyst::Plugin::ConfigLoader.pm => $@";
   };
   use Catalyst::Test 'MyApp';
